@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+
+  worker:
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Database:Database: networktest
+      Database:Port: 3306
+      Database:Server: mariadb
+      Database:UserId: networktest
+      Logging:LogLevel:Default: Debug
+    image: eassbhhtgu/networktest:latest
+    secrets:
+    - source: Database_Password
+
+  mariadb:
+    environment:
+      MARIADB_DATABASE: networktest
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_USER: networktest
+      MARIADB_PASSWORD_FILE: /run/secrets/Database_Password
+    image: mariadb:latest
+    ports:
+    - 3306:3306/tcp
+    secrets:
+    - source: Database_Password
+    volumes:
+    - ./NetworkTest.Db:/docker-entrypoint-initdb.d:ro
+
+secrets:
+  Database_Password:
+    external: true
+    name: networktest_mariadb_password

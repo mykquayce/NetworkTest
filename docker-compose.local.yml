@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_DATABASE: networktest
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_USER: networktest
+      MARIADB_PASSWORD_FILE: /run/secrets/networktest_mariadb_password
+    ports:
+    - 3306:3306/tcp
+    secrets:
+    - source: networktest_mariadb_password
+    volumes:
+    - mariadb-volume:/var/lib/mysql:rw
+    - ./NetworkTest.Db:/docker-entrypoint-initdb.d:ro
+
+secrets:
+  networktest_mariadb_password:
+    external: true
+    name: networktest_mariadb_password
+    
+volumes:
+  mariadb-volume: {}

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>dotnet-NetworkTest.WorkerService-A2357F95-287D-411F-8BB9-BA4CBDCDBD60</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Helpers.DockerSecrets" Version="1.3.5-preview4" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.4.21253.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\NetworkTest.Workflows\NetworkTest.Workflows.csproj" />
+  </ItemGroup>
+</Project>

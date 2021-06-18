@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31320.298
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkTest.Repositories.Tests", "NetworkTest.Repositories.Tests\NetworkTest.Repositories.Tests.csproj", "{E01D92C8-9DBB-497D-82BE-A075474F697D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkTest.Repositories", "NetworkTest.Repositories\NetworkTest.Repositories.csproj", "{375B56DE-31C9-4C8A-9113-617C0D1421E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NetworkTest.Db", "NetworkTest.Db", "{20A68443-DE4C-488B-924F-1C474661573D}"
+	ProjectSection(SolutionItems) = preProject
+		NetworkTest.Db\1.sql = NetworkTest.Db\1.sql
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkTest.Workflows.Tests", "NetworkTest.Workflows.Tests\NetworkTest.Workflows.Tests.csproj", "{85A3EFA8-2692-4E76-BB88-356F7372CBC0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkTest.Workflows", "NetworkTest.Workflows\NetworkTest.Workflows.csproj", "{270A2BEB-E4A3-4024-8EFE-92D4AF930088}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetworkTest.WorkerService", "NetworkTest.WorkerService\NetworkTest.WorkerService.csproj", "{7CFA210B-FD28-470D-AC97-36363754C3C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{644163A8-F24B-4687-8A82-A0264FFE50A3}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		build.sh = build.sh
+		deploy.sh = deploy.sh
+		docker-compose.local.yml = docker-compose.local.yml
+		docker-compose.yml = docker-compose.yml
+		Dockerfile = Dockerfile
+		readme.md = readme.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E01D92C8-9DBB-497D-82BE-A075474F697D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01D92C8-9DBB-497D-82BE-A075474F697D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E01D92C8-9DBB-497D-82BE-A075474F697D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E01D92C8-9DBB-497D-82BE-A075474F697D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{375B56DE-31C9-4C8A-9113-617C0D1421E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{375B56DE-31C9-4C8A-9113-617C0D1421E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{375B56DE-31C9-4C8A-9113-617C0D1421E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{375B56DE-31C9-4C8A-9113-617C0D1421E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85A3EFA8-2692-4E76-BB88-356F7372CBC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85A3EFA8-2692-4E76-BB88-356F7372CBC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85A3EFA8-2692-4E76-BB88-356F7372CBC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85A3EFA8-2692-4E76-BB88-356F7372CBC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270A2BEB-E4A3-4024-8EFE-92D4AF930088}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270A2BEB-E4A3-4024-8EFE-92D4AF930088}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270A2BEB-E4A3-4024-8EFE-92D4AF930088}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270A2BEB-E4A3-4024-8EFE-92D4AF930088}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CFA210B-FD28-470D-AC97-36363754C3C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CFA210B-FD28-470D-AC97-36363754C3C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CFA210B-FD28-470D-AC97-36363754C3C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CFA210B-FD28-470D-AC97-36363754C3C0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DCDBD1D2-909F-4972-8159-70695D5596C2}
+	EndGlobalSection
+EndGlobal
