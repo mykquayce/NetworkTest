@@ -27,8 +27,12 @@ services:
     - source: Database_Password
     volumes:
     - ./NetworkTest.Db:/docker-entrypoint-initdb.d:ro
+    - mariadb-volume:/var/lib/mysql:rw
 
 secrets:
   Database_Password:
     external: true
     name: networktest_mariadb_password
+
+volumes:
+  mariadb-volume: {}
