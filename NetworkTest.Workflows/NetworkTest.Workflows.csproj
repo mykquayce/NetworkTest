@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.Networking" Version="1.6.7-preview4" />
-    <PackageReference Include="WorkflowCore" Version="3.5.0" />
+    <PackageReference Include="Helpers.Networking" Version="1.6.14-preview6" />
+    <PackageReference Include="WorkflowCore" Version="3.5.2" />
   </ItemGroup>
 
   <ItemGroup>
