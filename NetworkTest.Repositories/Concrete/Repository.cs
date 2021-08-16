@@ -10,15 +10,16 @@ namespace NetworkTest.Repositories.Concrete
 {
 	public class Repository : IRepository
 	{
-		public record Config(string Server, string Database, uint Port, string UserId, string Password)
+		public record Config(string Server, string Database, uint Port, MySqlSslMode SslMode, string UserId, string Password)
 		{
 			public const string DefaultServer = "localhost";
 			public const string DefaultDatabase = "db";
 			public const uint DefaultPort = 3_306;
+			public const MySqlSslMode DefaultSslMode = MySqlSslMode.None;
 			public const string DefaultUserId = "root";
 			public const string DefaultPassword = "password";
 
-			public Config() : this(DefaultServer, DefaultDatabase, DefaultPort, DefaultUserId, DefaultPassword) { }
+			public Config() : this(DefaultServer, DefaultDatabase, DefaultPort, DefaultSslMode, DefaultUserId, DefaultPassword) { }
 
 			public static Config Defaults => new();
 		}
@@ -35,6 +36,7 @@ namespace NetworkTest.Repositories.Concrete
 				Server = Guard.Argument(() => config.Server).NotNull().NotEmpty().NotWhiteSpace().Value,
 				Database = Guard.Argument(() => config.Database).NotNull().NotEmpty().NotWhiteSpace().Value,
 				Port = Guard.Argument(() => config.Port).Positive().Value,
+				SslMode = Guard.Argument(() => config.SslMode).Defined().Value,
 				UserID = Guard.Argument(() => config.UserId).NotNull().NotEmpty().NotWhiteSpace().Value,
 				Password = Guard.Argument(() => config.Password).NotNull().NotEmpty().NotWhiteSpace().Value,
 			};

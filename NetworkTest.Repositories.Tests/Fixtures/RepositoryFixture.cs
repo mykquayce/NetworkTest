@@ -12,11 +12,12 @@ namespace NetworkTest.Repositories.Tests.Fixtures
 			var server = userSecretsFixture["Database:Server"];
 			var database = userSecretsFixture["Database:Database"];
 			var port = uint.Parse(userSecretsFixture["Database:Port"]);
+			var sslMode = Enum.Parse<MySql.Data.MySqlClient.MySqlSslMode>(userSecretsFixture["Database:Port"]);
 			var userId = userSecretsFixture["Database:UserId"];
 			var password = userSecretsFixture["Database:Password"];
 
 
-			var config = new Concrete.Repository.Config(server, database, port, userId, password);
+			var config = new Concrete.Repository.Config(server, database, port, sslMode, userId, password);
 
 			var options = Options.Create(config);
 
