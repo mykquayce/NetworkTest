@@ -44,7 +44,7 @@ public class Worker : BackgroundService
 		System.Diagnostics.Debugger.Break();
 #endif
 
-		_logger.LogError(exception.Message, exception);
+		_logger.LogCritical(exception, "error processing step");
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
