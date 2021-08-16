@@ -1,48 +1,37 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.Threading.Tasks;
+using NetworkTest.WorkerService;
 
-namespace NetworkTest.WorkerService
-{
-	public class Program
+var hostBuilder = Host.CreateDefaultBuilder(args);
+
+hostBuilder
+	.ConfigureAppConfiguration((hostContext, configurationBuilder) =>
 	{
-		public static Task Main(string[] args) => CreateHostBuilder(args).RunConsoleAsync();
+		configurationBuilder
+			.AddDockerSecrets(optional: true, reloadOnChange: true, filenameCharsToSwapWithColons: '_');
+	});
 
-		public static IHostBuilder CreateHostBuilder(string[] args)
-		{
-			var hostBuilder = Host.CreateDefaultBuilder(args);
+hostBuilder
+	.ConfigureServices((hostContext, services) =>
+	{
+		services.AddHostedService<Worker>();
 
-			hostBuilder
-				.ConfigureAppConfiguration((hostContext, configurationBuilder) =>
-				{
-					configurationBuilder
-						.AddDockerSecrets(optional: true, reloadOnChange: true, filenameCharsToSwapWithColons: '_');
-				});
+		services.AddLogging();
+		services.AddWorkflow();
 
-			hostBuilder
-				.ConfigureServices((hostContext, services) =>
-				{
-					services.AddHostedService<Worker>();
+		services
+			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
+			.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(hostContext.Configuration.GetSection("Database"))
+			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration);
 
-					services.AddLogging();
-					services.AddWorkflow();
+		services
+			.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
+			.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 
-					services
-						.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
-						.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(hostContext.Configuration.GetSection("Database"))
-						.Configure<Worker.Config>(hostContext.Configuration);
+		services
+			.AddTransient<NetworkTest.Workflows.Steps.PingStep>()
+			.AddTransient<NetworkTest.Workflows.Steps.SaveStep>();
+	});
 
-					services
-						.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
-						.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
+var host = hostBuilder
+	.Build();
 
-					services
-						.AddTransient<Workflows.Steps.PingStep>()
-						.AddTransient<Workflows.Steps.SaveStep>();
-				});
-
-			return hostBuilder;
-		}
-	}
-}
+await host.RunAsync();
