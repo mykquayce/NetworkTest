@@ -1,19 +1,18 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace NetworkTest.Repositories.Tests.Fixtures
+namespace NetworkTest.Repositories.Tests.Fixtures;
+
+public class UserSecretsFixture
 {
-	public class UserSecretsFixture
+	private readonly IConfiguration _configuration;
+
+	public UserSecretsFixture()
 	{
-		private readonly IConfiguration _configuration;
-
-		public UserSecretsFixture()
-		{
-			_configuration = new ConfigurationBuilder()
-				.AddUserSecrets<UserSecretsFixture>()
-				.Build();
-		}
-
-		public string this[string key] => _configuration[key]
-			?? throw new KeyNotFoundException($"{key} {nameof(key)} not found");
+		_configuration = new ConfigurationBuilder()
+			.AddUserSecrets<UserSecretsFixture>()
+			.Build();
 	}
+
+	public string this[string key] => _configuration[key]
+		?? throw new KeyNotFoundException($"{key} {nameof(key)} not found");
 }

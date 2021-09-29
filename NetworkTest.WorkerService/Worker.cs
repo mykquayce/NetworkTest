@@ -5,6 +5,7 @@ using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
 namespace NetworkTest.WorkerService;
+
 public class Worker : BackgroundService
 {
 	public record Config(int Interval, string Target)

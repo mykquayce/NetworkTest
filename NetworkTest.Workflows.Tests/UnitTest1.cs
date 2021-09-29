@@ -5,71 +5,70 @@ using WorkflowCore.Interface;
 using WorkflowCore.Models;
 using Xunit;
 
-namespace NetworkTest.Workflows.Tests
+namespace NetworkTest.Workflows.Tests;
+
+public class UnitTest1
 {
-	public class UnitTest1
+	[Theory]
+	[InlineData("45.56.112.112")]
+	public async Task Test1(string ipString)
 	{
-		[Theory]
-		[InlineData("45.56.112.112")]
-		public async Task Test1(string ipString)
+		IWorkflowHost workflowHost;
 		{
-			IWorkflowHost workflowHost;
+			var configCollection = new Dictionary<string, string>
 			{
-				var configCollection = new Dictionary<string, string>
-				{
-					["Ping:Timeout"] = "2000",
-					["Database:Server"] = "localhost",
-					["Database:Database"] = "networktest",
-					["Database:Port"] = "3306",
-					["Database:UserId"] = "networktest",
-					["Database:Password"] = "6MgYJFucyfBDXZeTE2Knu2wIJZQudMwWo0U560caAlVSdMoycXTqSgsZaoWFYKFY0CZJwoQ0IwUrVKVxRj6CyUKTCClKjNqkr7MzAX8gSmo7Cpdhr0OenCNTb5yMiGaU4rdA7JMaXwDS7fHdOREYBUe64ZYnAd7CuE4CfSUPXwWKJKJC01WEzIFdt49UGsVQnOIk7jgq4es7MfP5M3SXCB4zC7JrsVdjMxaCbl7zzwwQPk0xPqQroDx6QTWUf1ZAyi",
-				};
+				["Ping:Timeout"] = "2000",
+				["Database:Server"] = "localhost",
+				["Database:Database"] = "networktest",
+				["Database:Port"] = "3306",
+				["Database:UserId"] = "networktest",
+				["Database:Password"] = "6MgYJFucyfBDXZeTE2Knu2wIJZQudMwWo0U560caAlVSdMoycXTqSgsZaoWFYKFY0CZJwoQ0IwUrVKVxRj6CyUKTCClKjNqkr7MzAX8gSmo7Cpdhr0OenCNTb5yMiGaU4rdA7JMaXwDS7fHdOREYBUe64ZYnAd7CuE4CfSUPXwWKJKJC01WEzIFdt49UGsVQnOIk7jgq4es7MfP5M3SXCB4zC7JrsVdjMxaCbl7zzwwQPk0xPqQroDx6QTWUf1ZAyi",
+			};
 
-				var services = new ServiceCollection();
-				services.AddLogging();
-				services.AddWorkflow();
-				var configuration = new ConfigurationBuilder()
-					.AddInMemoryCollection(configCollection)
-					.Build();
-				services
-					.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(configuration.GetSection("Ping"))
-					.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(configuration.GetSection("Database"));
+			var services = new ServiceCollection();
+			services.AddLogging();
+			services.AddWorkflow();
+			var configuration = new ConfigurationBuilder()
+				.AddInMemoryCollection(configCollection)
+				.Build();
+			services
+				.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(configuration.GetSection("Ping"))
+				.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(configuration.GetSection("Database"));
 
-				services
-					.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
-					.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
+			services
+				.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
+				.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 
-				services
-					.AddTransient<Steps.PingStep>()
-					.AddTransient<Steps.SaveStep>();
+			services
+				.AddTransient<Steps.PingStep>()
+				.AddTransient<Steps.SaveStep>();
 
-				var serviceProvider = services.BuildServiceProvider();
-				workflowHost = serviceProvider.GetRequiredService<IWorkflowHost>();
-			}
-
-			workflowHost.RegisterWorkflow<MyWorkflow, PersistenceData>();
-			workflowHost.Start();
-
-			workflowHost.OnStepError += WorkflowHost_OnStepError;
-
-			var data = new PersistenceData { IPAddress = IPAddress.Parse(ipString), };
-
-			var workflowInstanceId = await workflowHost.StartWorkflow(nameof(MyWorkflow), data);
-
-			await Task.Delay(millisecondsDelay: 20_000);
-
-			workflowHost.Stop();
-
-			var workflowInstance = await workflowHost.PersistenceStore.GetWorkflowInstance(workflowInstanceId);
-
-			var data2 = (PersistenceData)workflowInstance.Data;
-
-			Assert.NotNull(data2.Results);
+			var serviceProvider = services.BuildServiceProvider();
+			workflowHost = serviceProvider.GetRequiredService<IWorkflowHost>();
 		}
 
-		private void WorkflowHost_OnStepError(WorkflowInstance workflow, WorkflowStep step, System.Exception exception)
-		{
-			Assert.True(false, exception.Message);
-		}
+		workflowHost.RegisterWorkflow<MyWorkflow, PersistenceData>();
+		workflowHost.Start();
+
+		workflowHost.OnStepError += WorkflowHost_OnStepError;
+
+		var data = new PersistenceData { IPAddress = IPAddress.Parse(ipString), };
+
+		var workflowInstanceId = await workflowHost.StartWorkflow(nameof(MyWorkflow), data);
+
+		await Task.Delay(millisecondsDelay: 20_000);
+
+		workflowHost.Stop();
+
+		var workflowInstance = await workflowHost.PersistenceStore.GetWorkflowInstance(workflowInstanceId);
+
+		var data2 = (PersistenceData)workflowInstance.Data;
+
+		Assert.NotNull(data2.Results);
+	}
+
+	private void WorkflowHost_OnStepError(WorkflowInstance workflow, WorkflowStep step, System.Exception exception)
+	{
+		Assert.True(false, exception.Message);
 	}
 }
