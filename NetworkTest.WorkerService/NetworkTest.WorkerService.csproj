@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-NetworkTest.WorkerService-A2357F95-287D-411F-8BB9-BA4CBDCDBD60</UserSecretsId>
   </PropertyGroup>
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace NetworkTest.Repositories
+﻿namespace NetworkTest.Repositories
 {
 	public interface IRepository : IDisposable
 	{

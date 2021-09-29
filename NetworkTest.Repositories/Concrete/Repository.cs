@@ -2,9 +2,7 @@
 using Dawn;
 using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
-using System;
 using System.Data;
-using System.Threading.Tasks;
 
 namespace NetworkTest.Repositories.Concrete
 {
@@ -29,16 +27,16 @@ namespace NetworkTest.Repositories.Concrete
 		#region constructor
 		public Repository(IOptions<Config> options)
 		{
-			var config = Guard.Argument(() => options).NotNull().Wrap(o => o.Value).NotNull().Value;
+			var config = Guard.Argument(options).NotNull().Wrap(o => o.Value).NotNull().Value;
 
 			var builder = new MySqlConnectionStringBuilder
 			{
-				Server = Guard.Argument(() => config.Server).NotNull().NotEmpty().NotWhiteSpace().Value,
-				Database = Guard.Argument(() => config.Database).NotNull().NotEmpty().NotWhiteSpace().Value,
-				Port = Guard.Argument(() => config.Port).Positive().Value,
-				SslMode = Guard.Argument(() => config.SslMode).Defined().Value,
-				UserID = Guard.Argument(() => config.UserId).NotNull().NotEmpty().NotWhiteSpace().Value,
-				Password = Guard.Argument(() => config.Password).NotNull().NotEmpty().NotWhiteSpace().Value,
+				Server = Guard.Argument(config.Server).NotNull().NotEmpty().NotWhiteSpace().Value,
+				Database = Guard.Argument(config.Database).NotNull().NotEmpty().NotWhiteSpace().Value,
+				Port = Guard.Argument(config.Port).Positive().Value,
+				SslMode = Guard.Argument(config.SslMode).Defined().Value,
+				UserID = Guard.Argument(config.UserId).NotNull().NotEmpty().NotWhiteSpace().Value,
+				Password = Guard.Argument(config.Password).NotNull().NotEmpty().NotWhiteSpace().Value,
 			};
 
 			var connectionString = builder.ConnectionString;
@@ -49,19 +47,19 @@ namespace NetworkTest.Repositories.Concrete
 
 		public Task DeleteResult(DateTime dateTime)
 		{
-			Guard.Argument(() => dateTime).NotDefault().LessThan(DateTime.UtcNow);
+			Guard.Argument(dateTime).NotDefault().LessThan(DateTime.UtcNow);
 			return _connection.ExecuteAsync("DELETE FROM Results WHERE DateTime = @dateTime;", param: new { dateTime, });
 		}
 
 		public Task<Helpers.Networking.Models.PacketLossResults> GetResult(DateTime dateTime)
 		{
-			Guard.Argument(() => dateTime).NotDefault().LessThan(DateTime.UtcNow);
+			Guard.Argument(dateTime).NotDefault().LessThan(DateTime.UtcNow);
 			return _connection.QueryFirstOrDefaultAsync<Helpers.Networking.Models.PacketLossResults>("SELECT * FROM Results WHERE DateTime = @dateTime LIMIT 1;", param: new { dateTime, });
 		}
 
 		public Task SaveResult(Helpers.Networking.Models.PacketLossResults result)
 		{
-			Guard.Argument(() => result).NotNull();
+			Guard.Argument(result).NotNull();
 			return _connection.ExecuteAsync(
 				"INSERT Results (DateTime, Count, FailedCount, PacketLossPercentage, AverageRoundtripTime, AverageJitter) VALUES (@DateTime, @Count, @FailedCount, @PacketLossPercentage, @AverageRoundtripTime, @AverageJitter);",
 				param: result);
@@ -69,7 +67,7 @@ namespace NetworkTest.Repositories.Concrete
 
 		public Task UpdateResult(Helpers.Networking.Models.PacketLossResults result)
 		{
-			Guard.Argument(() => result).NotNull();
+			Guard.Argument(result).NotNull();
 			return _connection.ExecuteAsync(@"UPDATE Results
 				SET Count = @Count,
 					FailedCount = @FailedCount,

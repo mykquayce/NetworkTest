@@ -27,11 +27,11 @@ public class Worker : BackgroundService
 		_logger = logger;
 		_workflowHost = workflowHost;
 
-		var config = Guard.Argument(() => options).NotNull().Wrap(o => o.Value).NotNull().Value;
+		var config = Guard.Argument(options).NotNull().Wrap(o => o.Value).NotNull().Value;
 
-		var target = Guard.Argument(() => config).Wrap(c => c.Target).NotNull().NotEmpty().NotWhiteSpace();
+		var target = Guard.Argument(config).Wrap(c => c.Target).NotNull().NotEmpty().NotWhiteSpace();
 		_ip = Dns.GetHostAddresses(target).FirstOrDefault() ?? throw new Exception();
-		_interval = Guard.Argument(() => config).Wrap(c => c.Interval).Positive().Value;
+		_interval = Guard.Argument(config).Wrap(c => c.Interval).Positive().Value;
 
 		_workflowHost.OnStepError += WorkflowHost_OnStepError;
 		_workflowHost.RegisterWorkflow<Workflows.MyWorkflow, Workflows.PersistenceData>();
