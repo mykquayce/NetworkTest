@@ -15,7 +15,10 @@ hostBuilder
 		services.AddHostedService<Worker>();
 
 		services.AddLogging();
-		services.AddWorkflow();
+		services.AddWorkflow(options =>
+		{
+			options.UsePollInterval(TimeSpan.FromMinutes(1));
+		});
 
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
