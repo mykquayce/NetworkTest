@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
 using Xunit;
@@ -9,15 +8,17 @@ namespace NetworkTest.Workflows.Tests;
 
 public class UnitTest1
 {
-	[Theory]
-	[InlineData("45.56.112.112")]
-	public async Task Test1(string ipString)
+	[Fact]
+	public async Task Test1()
 	{
 		IWorkflowHost workflowHost;
 		{
 			var configCollection = new Dictionary<string, string>
 			{
 				["Ping:Timeout"] = "2000",
+				["Test:HostNameOrIPAddress"] = "lse.packetlosstest.com",
+				["Test:MillisecondInterval"] = "1800000",
+				["Test:MillisecondDuration"] = "20000",
 				["Database:Server"] = "localhost",
 				["Database:Database"] = "networktest",
 				["Database:Port"] = "3306",
@@ -32,6 +33,7 @@ public class UnitTest1
 				.AddInMemoryCollection(configCollection)
 				.Build();
 			services
+				.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(configuration.GetSection("Ping"))
 				.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(configuration.GetSection("Ping"))
 				.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(configuration.GetSection("Database"));
 
@@ -52,7 +54,7 @@ public class UnitTest1
 
 		workflowHost.OnStepError += WorkflowHost_OnStepError;
 
-		var data = new PersistenceData { IPAddress = IPAddress.Parse(ipString), };
+		var data = new PersistenceData();
 
 		var workflowInstanceId = await workflowHost.StartWorkflow(nameof(MyWorkflow), data);
 

@@ -22,11 +22,13 @@ hostBuilder
 
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
+			.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(hostContext.Configuration.GetSection("Test"))
 			.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(hostContext.Configuration.GetSection("Database"))
-			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration);
+			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test"));
 
 		services
 			.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
+			.AddTransient<NetworkTest.Services.IPacketLossTestService, NetworkTest.Services.Concrete.PacketLossTestService>()
 			.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 
 		services

@@ -6,10 +6,14 @@ services:
     environment:
       DOTNET_ENVIRONMENT: Production
       Database:Database: networktest
-      Database:Port: 3306
+      Database:Port: "3306"
       Database:Server: mariadb
       Database:UserId: networktest
       Logging:LogLevel:Default: Debug
+      Ping:Timeout: "2000"
+      Test:HostNameOrIPAddress: lau.packetlosstest.com
+      Test:MillisecondInterval: "1800000"
+      Test:MillisecondDuration: "20000"
     image: eassbhhtgu/networktest:latest
     secrets:
     - source: Database_Password

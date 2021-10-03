@@ -1,6 +1,5 @@
 ﻿using Dawn;
 using Microsoft.Extensions.Logging;
-using System.Net;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
@@ -9,22 +8,20 @@ namespace NetworkTest.Workflows.Steps;
 public class PingStep : IStepBody
 {
 	private readonly ILogger<PingStep> _logger;
-	private readonly Helpers.Networking.Clients.IPingClient _client;
+	private readonly Services.IPacketLossTestService _pingService;
 
-	public PingStep(ILogger<PingStep> logger, Helpers.Networking.Clients.IPingClient client)
+	public PingStep(ILogger<PingStep> logger, Services.IPacketLossTestService pingService)
 	{
 		_logger = Guard.Argument(logger).NotNull().Value;
-		_client = Guard.Argument(client).NotNull().Value;
+		_pingService = Guard.Argument(pingService).NotNull().Value;
 	}
 
-	public IPAddress? IPAddress { get; set; }
 	public Helpers.Networking.Models.PacketLossResults? Results { get; set; }
 
 	public async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
 	{
-		Guard.Argument(IPAddress!).NotNull();
-		_logger.LogDebug($"Pinging: {IPAddress}");
-		Results = await _client.PacketLossTestAsync(IPAddress!);
+		_logger.LogDebug("Pinging");
+		Results = await _pingService.PacketLossTestAsync();
 		_logger.LogDebug($"Results: {Results.Count} ping(s), {Results.PacketLossPercentage:F2}% packet loss");
 		return ExecutionResult.Next();
 	}

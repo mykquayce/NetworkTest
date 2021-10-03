@@ -9,6 +9,7 @@ namespace NetworkTest.Repositories.Concrete;
 public class Repository : IRepository
 {
 	public record Config(string Server, string Database, uint Port, MySqlSslMode SslMode, string UserId, string Password)
+		: IOptions<Config>
 	{
 		public const string DefaultServer = "localhost";
 		public const string DefaultDatabase = "db";
@@ -20,6 +21,10 @@ public class Repository : IRepository
 		public Config() : this(DefaultServer, DefaultDatabase, DefaultPort, DefaultSslMode, DefaultUserId, DefaultPassword) { }
 
 		public static Config Defaults => new();
+
+		#region ioptions implementation
+		public Config Value => this;
+		#endregion ioptions implementation
 	}
 
 	private readonly IDbConnection _connection;

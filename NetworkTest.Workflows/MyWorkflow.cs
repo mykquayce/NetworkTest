@@ -12,7 +12,6 @@ public class MyWorkflow : IWorkflow<PersistenceData>
 	{
 		builder
 			.StartWith<Steps.PingStep>()
-				.Input(step => step.IPAddress, data => data.IPAddress)
 				.Output(data => data.Results, step => step.Results)
 			.Then<Steps.SaveStep>()
 				.Input(step => step.Results, data => data.Results);

@@ -1,6 +1,5 @@
 using Dawn;
 using Microsoft.Extensions.Options;
-using System.Net;
 using WorkflowCore.Interface;
 using WorkflowCore.Models;
 
@@ -8,31 +7,27 @@ namespace NetworkTest.WorkerService;
 
 public class Worker : BackgroundService
 {
-	public record Config(int Interval, string Target)
+	public record Config(int MillisecondInterval)
 	{
-		public const int DefaultInterval = 1_800_000;
-		public const string DefaultTarget = "lse.packetlosstest.com";
+		public const int DefaultMillisecondInterval = 1_800_000;
 
-		public Config() : this(DefaultInterval, DefaultTarget) { }
+		public Config() : this(DefaultMillisecondInterval) { }
 
 		public static Config Default => new();
 	}
 
 	private readonly ILogger<Worker> _logger;
 	private readonly IWorkflowHost _workflowHost;
-	private readonly IPAddress _ip;
-	private readonly int _interval;
+	private readonly int _millisecondInterval;
 
 	public Worker(ILogger<Worker> logger, IWorkflowHost workflowHost, IOptions<Config> options)
 	{
 		_logger = logger;
 		_workflowHost = workflowHost;
 
-		var config = Guard.Argument(options).NotNull().Wrap(o => o.Value).NotNull().Value;
-
-		var target = Guard.Argument(config).Wrap(c => c.Target).NotNull().NotEmpty().NotWhiteSpace();
-		_ip = Dns.GetHostAddresses(target).FirstOrDefault() ?? throw new Exception();
-		_interval = Guard.Argument(config).Wrap(c => c.Interval).Positive().Value;
+		_millisecondInterval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
+			.NotNull().Wrap(c => c.MillisecondInterval)
+			.Positive().Value;
 
 		_workflowHost.OnStepError += WorkflowHost_OnStepError;
 		_workflowHost.RegisterWorkflow<Workflows.MyWorkflow, Workflows.PersistenceData>();
@@ -54,12 +49,12 @@ public class Worker : BackgroundService
 		{
 			_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-				var data = new Workflows.PersistenceData { IPAddress = _ip, };
+			var data = new Workflows.PersistenceData();
 
-				await _workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data);
+			await _workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data);
 
-			try { await Task.Delay(_interval, stoppingToken); }
-			catch (OperationCanceledException) { return; }
+			try { await Task.Delay(_millisecondInterval, stoppingToken); }
+			catch (OperationCanceledException) { break; }
 		}
 
 		_workflowHost.Stop();
