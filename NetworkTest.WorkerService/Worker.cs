@@ -51,9 +51,12 @@ public class Worker : BackgroundService
 
 			var data = new Workflows.PersistenceData();
 
-			await _workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data);
-
-			try { await Task.Delay(_millisecondInterval, stoppingToken); }
+			try
+			{
+				await Task.WhenAll(
+					_workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data),
+					Task.Delay(_millisecondInterval, stoppingToken));
+			}
 			catch (OperationCanceledException) { break; }
 		}
 
