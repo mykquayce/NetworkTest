@@ -23,7 +23,7 @@ hostBuilder
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
 			.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(hostContext.Configuration.GetSection("Test"))
-			.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(hostContext.Configuration.GetSection("Database"))
+			.Configure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
 			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test"));
 
 		services

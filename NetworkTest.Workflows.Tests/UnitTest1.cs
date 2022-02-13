@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WorkflowCore.Interface;
-using WorkflowCore.Models;
 using Xunit;
 
 namespace NetworkTest.Workflows.Tests;
@@ -18,7 +17,7 @@ public class UnitTest1
 				["Ping:Timeout"] = "2000",
 				["Test:HostNameOrIPAddress"] = "lse.packetlosstest.com",
 				["Test:MillisecondInterval"] = "1800000",
-				["Test:MillisecondDuration"] = "20000",
+				["Test:MillisecondDuration"] = "15000",
 				["Database:Server"] = "localhost",
 				["Database:Database"] = "networktest",
 				["Database:Port"] = "3306",
@@ -35,7 +34,7 @@ public class UnitTest1
 			services
 				.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(configuration.GetSection("Ping"))
 				.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(configuration.GetSection("Ping"))
-				.Configure<NetworkTest.Repositories.Concrete.Repository.Config>(configuration.GetSection("Database"));
+				.Configure<Helpers.MySql.Config>(configuration.GetSection("Database"));
 
 			services
 				.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
@@ -52,7 +51,7 @@ public class UnitTest1
 		workflowHost.RegisterWorkflow<MyWorkflow, PersistenceData>();
 		workflowHost.Start();
 
-		workflowHost.OnStepError += WorkflowHost_OnStepError;
+		workflowHost.OnStepError += (_, step, exception) => Assert.True(false, step.Name + ";" + exception.Message);
 
 		var data = new PersistenceData();
 
@@ -67,10 +66,5 @@ public class UnitTest1
 		var data2 = (PersistenceData)workflowInstance.Data;
 
 		Assert.NotNull(data2.Results);
-	}
-
-	private void WorkflowHost_OnStepError(WorkflowInstance workflow, WorkflowStep step, System.Exception exception)
-	{
-		Assert.True(false, exception.Message);
 	}
 }

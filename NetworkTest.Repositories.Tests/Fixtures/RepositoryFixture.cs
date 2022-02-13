@@ -1,50 +1,30 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Data;
 
 namespace NetworkTest.Repositories.Tests.Fixtures;
 
-public class RepositoryFixture : IDisposable
+public sealed class RepositoryFixture : IDisposable
 {
+	private readonly IDbConnection _connection;
+
 	public RepositoryFixture()
 	{
 		var userSecretsFixture = new UserSecretsFixture();
 
 		var server = userSecretsFixture["Database:Server"];
-		var database = userSecretsFixture["Database:Database"];
 		var port = uint.Parse(userSecretsFixture["Database:Port"]);
-		var sslMode = Enum.Parse<MySql.Data.MySqlClient.MySqlSslMode>(userSecretsFixture["Database:Port"]);
+		var database = userSecretsFixture["Database:Database"];
+		var secure = bool.Parse(userSecretsFixture["Database:Secure"]);
 		var userId = userSecretsFixture["Database:UserId"];
 		var password = userSecretsFixture["Database:Password"];
 
+		var config = new Helpers.MySql.Config(server, port, database, userId, password, secure);
 
-		var config = new Concrete.Repository.Config(server, database, port, sslMode, userId, password);
+		_connection = config.DbConnection;
 
-		var options = Options.Create(config);
-
-		Repository = new Concrete.Repository(options);
+		Repository = new Concrete.Repository(_connection);
 	}
 
 	public IRepository Repository { get; }
 
-	#region disposing
-	private bool _disposing;
-
-	protected virtual void Dispose(bool disposing)
-	{
-		if (!_disposing)
-		{
-			if (disposing)
-			{
-				Repository.Dispose();
-			}
-
-			_disposing = true;
-		}
-	}
-
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-	#endregion disposing
+	public void Dispose() => _connection.Dispose();
 }
