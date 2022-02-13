@@ -1,7 +1,5 @@
-﻿using Dapper;
-using Dawn;
+﻿using Dawn;
 using System.Data;
-using System.Linq;
 
 namespace NetworkTest.Repositories.Concrete;
 

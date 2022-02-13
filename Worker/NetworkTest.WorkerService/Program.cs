@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Options;
 using NetworkTest.WorkerService;
 
 var hostBuilder = Host.CreateDefaultBuilder(args);
@@ -29,6 +30,11 @@ hostBuilder
 		services
 			.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
 			.AddTransient<NetworkTest.Services.IPacketLossTestService, NetworkTest.Services.Concrete.PacketLossTestService>()
+			.AddTransient<System.Data.IDbConnection>(provider =>
+			{
+				var options = provider.GetRequiredService<IOptions<Helpers.MySql.Config>>();
+				return new MySql.Data.MySqlClient.MySqlConnection(options.Value.ConnectionString);
+			})
 			.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 
 		services
