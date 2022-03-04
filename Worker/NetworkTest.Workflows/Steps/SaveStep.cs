@@ -21,9 +21,9 @@ public class SaveStep : IStepBody
 	public async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
 	{
 		Guard.Argument(Results!).NotNull();
-		_logger.LogDebug($"Saving: {Results!.Count} ping(s), {Results.PacketLossPercentage:F2}% packet loss");
+		_logger.LogInformation("Saving.");
 		await _repository.SaveResult(Results!);
-		_logger.LogDebug("Saved.");
+		_logger.LogInformation("Saved.");
 		return ExecutionResult.Next();
 	}
 }
