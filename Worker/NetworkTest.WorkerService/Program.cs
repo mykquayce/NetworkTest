@@ -25,7 +25,7 @@ hostBuilder
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
 			.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(hostContext.Configuration.GetSection("Test"))
 			.Configure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
-			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test"));
+			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test").GetSection("Interval"));
 
 		services
 			.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()

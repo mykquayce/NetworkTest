@@ -7,27 +7,26 @@ namespace NetworkTest.WorkerService;
 
 public class Worker : BackgroundService
 {
-	public record Config(int MillisecondInterval)
+	public record Config : Models.Interval, IOptions<Config>
 	{
-		public const int DefaultMillisecondInterval = 1_800_000;
+		public const Units DefaultUnit = Units.Day;
+		public const double DefaultCount = 1;
+		public Config() : base(DefaultUnit, DefaultCount) { }
 
-		public Config() : this(DefaultMillisecondInterval) { }
-
-		public static Config Default => new();
+		public Config Value => new();
 	}
 
 	private readonly ILogger<Worker> _logger;
 	private readonly IWorkflowHost _workflowHost;
-	private readonly int _millisecondInterval;
+	private readonly Models.Interval _interval;
 
 	public Worker(ILogger<Worker> logger, IWorkflowHost workflowHost, IOptions<Config> options)
 	{
 		_logger = logger;
 		_workflowHost = workflowHost;
 
-		_millisecondInterval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
-			.NotNull().Wrap(c => c.MillisecondInterval)
-			.Positive().Value;
+		_interval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
+			.NotNull().Value;
 
 		_workflowHost.OnStepError += WorkflowHost_OnStepError;
 		_workflowHost.RegisterWorkflow<Workflows.MyWorkflow, Workflows.PersistenceData>();
@@ -51,11 +50,14 @@ public class Worker : BackgroundService
 
 			var data = new Workflows.PersistenceData();
 
+			var delay = _interval.Next - DateTime.UtcNow;
+			var millisecondInterval = (int)delay.TotalMilliseconds;
+
 			try
 			{
 				await Task.WhenAll(
 					_workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data),
-					Task.Delay(_millisecondInterval, stoppingToken));
+					Task.Delay(millisecondInterval, stoppingToken));
 			}
 			catch (OperationCanceledException) { break; }
 		}

@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetworkTest.Models\NetworkTest.Models.csproj" />
     <ProjectReference Include="..\NetworkTest.Workflows\NetworkTest.Workflows.csproj" />
   </ItemGroup>
 </Project>
