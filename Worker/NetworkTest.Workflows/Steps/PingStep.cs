@@ -20,9 +20,10 @@ public class PingStep : IStepBody
 
 	public async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
 	{
-		_logger.LogDebug("Pinging");
+		_logger.LogInformation("Pinging");
 		Results = await _pingService.PacketLossTestAsync();
-		_logger.LogDebug($"Results: {Results.Count} ping(s), {Results.PacketLossPercentage:F2}% packet loss");
+		var (_, count, _, loss, _, jitter) = Results;
+		_logger.LogInformation("Results: {count:D} ping(s), {loss:F2}% packet loss, {jitter:F2}ms jitter", count, loss, jitter);
 		return ExecutionResult.Next();
 	}
 }
