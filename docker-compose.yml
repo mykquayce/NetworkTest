@@ -16,7 +16,8 @@ services:
       Logging:LogLevel:Default: Debug
       Ping:Timeout: "2000"
       Test:HostNameOrIPAddress: lau.packetlosstest.com
-      Test:MillisecondInterval: "1800000"
+      Test:Interval:Count: "0.5"
+      Test:Interval:Unit: Hour
       Test:MillisecondDuration: "20000"
     image: eassbhhtgu/networktest:latest
     secrets:
