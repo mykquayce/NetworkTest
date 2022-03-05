@@ -13,6 +13,7 @@ services:
       Database:Port: "3306"
       Database:Server: mariadb
       Database:UserId: networktest
+      Database:Password_File: /run/secrets/Database_Password
       Logging:LogLevel:Default: Debug
       Ping:Timeout: "2000"
       Test:HostNameOrIPAddress: lau.packetlosstest.com

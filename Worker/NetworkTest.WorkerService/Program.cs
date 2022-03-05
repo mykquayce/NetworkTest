@@ -4,13 +4,6 @@ using NetworkTest.WorkerService;
 var hostBuilder = Host.CreateDefaultBuilder(args);
 
 hostBuilder
-	.ConfigureAppConfiguration((hostContext, configurationBuilder) =>
-	{
-		configurationBuilder
-			.AddDockerSecrets(optional: true, reloadOnChange: true, filenameCharsToSwapWithColons: '_');
-	});
-
-hostBuilder
 	.ConfigureServices((hostContext, services) =>
 	{
 		services.AddHostedService<Worker>();
@@ -24,7 +17,7 @@ hostBuilder
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
 			.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(hostContext.Configuration.GetSection("Test"))
-			.Configure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
+			.FileConfigure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
 			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test").GetSection("Interval"));
 
 		services
