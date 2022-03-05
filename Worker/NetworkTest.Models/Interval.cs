@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-
-namespace NetworkTest.Models;
+﻿namespace NetworkTest.Models;
 
 public record Interval(Interval.Units Unit, double Count)
 {
