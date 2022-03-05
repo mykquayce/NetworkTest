@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.MySql" Version="1.4.0" />
+    <PackageReference Include="Helpers.MySql" Version="1.4.1" />
     <PackageReference Include="Helpers.Networking.Models" Version="1.1.17" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>

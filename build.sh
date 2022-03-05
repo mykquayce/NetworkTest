@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # base images
-for s in mcr.microsoft.com/dotnet/sdk:latest mcr.microsoft.com/dotnet/runtime:latest mariadb:latest
+for s in mcr.microsoft.com/dotnet/sdk:6.0 mcr.microsoft.com/dotnet/runtime:6.0 mariadb:latest
 do
 	docker pull $s
 done
