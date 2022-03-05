@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using WorkflowCore.Interface;
 using Xunit;
 
@@ -15,14 +16,13 @@ public class UnitTest1
 			var configCollection = new Dictionary<string, string>
 			{
 				["Ping:Timeout"] = "2000",
-				["Test:HostNameOrIPAddress"] = "lse.packetlosstest.com",
-				["Test:MillisecondInterval"] = "1800000",
+				["Test:HostNameOrIPAddress"] = "lau.packetlosstest.com",
 				["Test:MillisecondDuration"] = "15000",
 				["Database:Server"] = "localhost",
 				["Database:Database"] = "networktest",
 				["Database:Port"] = "3306",
 				["Database:UserId"] = "networktest",
-				["Database:Password"] = "6MgYJFucyfBDXZeTE2Knu2wIJZQudMwWo0U560caAlVSdMoycXTqSgsZaoWFYKFY0CZJwoQ0IwUrVKVxRj6CyUKTCClKjNqkr7MzAX8gSmo7Cpdhr0OenCNTb5yMiGaU4rdA7JMaXwDS7fHdOREYBUe64ZYnAd7CuE4CfSUPXwWKJKJC01WEzIFdt49UGsVQnOIk7jgq4es7MfP5M3SXCB4zC7JrsVdjMxaCbl7zzwwQPk0xPqQroDx6QTWUf1ZAyi",
+				["Database:Password"] = "networktest",
 			};
 
 			var services = new ServiceCollection();
@@ -32,12 +32,20 @@ public class UnitTest1
 				.AddInMemoryCollection(configCollection)
 				.Build();
 			services
-				.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(configuration.GetSection("Ping"))
+				.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(configuration.GetSection("Test"))
 				.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(configuration.GetSection("Ping"))
 				.Configure<Helpers.MySql.Config>(configuration.GetSection("Database"));
 
 			services
-				.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>()
+				.AddTransient<Services.IPacketLossTestService, Services.Concrete.PacketLossTestService>()
+				.AddTransient<Helpers.Networking.Clients.IPingClient, Helpers.Networking.Clients.Concrete.PingClient>();
+
+			services
+				.AddTransient<System.Data.IDbConnection>(provider =>
+				{
+					var options = provider.GetRequiredService<IOptions<Helpers.MySql.Config>>();
+					return new MySql.Data.MySqlClient.MySqlConnection(options.Value.ConnectionString);
+				})
 				.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 
 			services
@@ -54,6 +62,7 @@ public class UnitTest1
 		workflowHost.OnStepError += (_, step, exception) => Assert.True(false, step.Name + ";" + exception.Message);
 
 		var data = new PersistenceData();
+		Assert.Null(data.Results);
 
 		var workflowInstanceId = await workflowHost.StartWorkflow(nameof(MyWorkflow), data);
 
@@ -61,10 +70,9 @@ public class UnitTest1
 
 		workflowHost.Stop();
 
-		var workflowInstance = await workflowHost.PersistenceStore.GetWorkflowInstance(workflowInstanceId);
-
-		var data2 = (PersistenceData)workflowInstance.Data;
-
-		Assert.NotNull(data2.Results);
+		Assert.NotNull(data.Results);
+		var now = DateTime.UtcNow;
+		Assert.InRange(data.Results!.DateTime, now.AddMinutes(-1), now);
+		Assert.InRange(data.Results.Count, 10, 100);
 	}
 }
