@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mariadb:
-    image: mariadb:latest
+    image: eassbhhtgu/networktest-db:latest
     command: /bin/sh -c "openssl x509 -in /usr/certs/ca.crt -out /usr/certs/ca.pem -outform PEM \
         && openssl x509 -in /usr/certs/server.crt -out /usr/certs/server.pem -outform PEM \
         && openssl rsa -in /usr/certs/server.key -text > /usr/certs/server_key.pem \
@@ -15,11 +15,10 @@ services:
       MARIADB_DATABASE: networktest
       MARIADB_RANDOM_ROOT_PASSWORD: "yes"
       MARIADB_USER: networktest
-      MARIADB_PASSWORD_FILE: /run/secrets/networktest_mariadb_password
+      MARIADB_PASSWORD: networktest
     ports:
     - 3306:3306/tcp
     secrets:
-    - source: networktest_mariadb_password
     - source: ca.crt
       target: /usr/certs/ca.crt
     - source: server.crt
@@ -28,12 +27,8 @@ services:
       target: /usr/certs/server.key
     volumes:
     - mariadb-volume:/var/lib/mysql:rw
-    - ./Database/schema:/docker-entrypoint-initdb.d:ro
 
 secrets:
-  networktest_mariadb_password:
-    external: true
-    name: networktest_mariadb_password
   ca.crt:
     file: ${USERPROFILE}\.aspnet\https\ca.crt
   server.crt:
