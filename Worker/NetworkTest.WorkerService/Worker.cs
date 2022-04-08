@@ -18,12 +18,14 @@ public class Worker : BackgroundService
 
 	private readonly ILogger<Worker> _logger;
 	private readonly IWorkflowHost _workflowHost;
+	private readonly IPersistenceProvider _persistenceProvider;
 	private readonly Models.Interval _interval;
 
-	public Worker(ILogger<Worker> logger, IWorkflowHost workflowHost, IOptions<Config> options)
+	public Worker(ILogger<Worker> logger, IWorkflowHost workflowHost, IPersistenceProvider persistenceProvider, IOptions<Config> options)
 	{
 		_logger = logger;
 		_workflowHost = workflowHost;
+		_persistenceProvider = persistenceProvider;
 
 		_interval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
 			.NotNull().Value;
@@ -48,18 +50,23 @@ public class Worker : BackgroundService
 		{
 			_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-			var data = new Workflows.PersistenceData();
+			{
+				var data = new Workflows.PersistenceData();
+				var id = await _workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data);
+				WorkflowStatus status;
+				do
+				{
+					try { await Task.Delay(millisecondsDelay: 100, stoppingToken); }
+					catch (OperationCanceledException) { break; }
+					var instance = await _persistenceProvider.GetWorkflowInstance(id, stoppingToken);
+					status = instance.Status;
+				}
+				while (status == WorkflowStatus.Runnable);
+			}
 
 			var delay = _interval.Next - DateTime.UtcNow;
 			var millisecondInterval = (int)delay.TotalMilliseconds;
-
-			try
-			{
-				await Task.WhenAll(
-					_workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data),
-					Task.Delay(millisecondInterval, stoppingToken));
-			}
-			catch (OperationCanceledException) { break; }
+			await Task.Delay(millisecondInterval, stoppingToken);
 		}
 
 		_workflowHost.Stop();

@@ -11,7 +11,7 @@ hostBuilder
 		services.AddLogging();
 		services.AddWorkflow(options =>
 		{
-			options.UsePollInterval(TimeSpan.FromMinutes(1));
+			options.EnablePolling = false;
 		});
 
 		services
