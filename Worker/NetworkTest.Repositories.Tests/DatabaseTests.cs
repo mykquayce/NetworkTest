@@ -31,7 +31,7 @@ public class DatabaseTests : IClassFixture<Fixtures.RepositoryFixture>
 
 		// Assert
 		Assert.NotNull(two);
-		Assert.Equal(dateTime, two.DateTime);
+		Assert.Equal(dateTime, two!.DateTime);
 		Assert.Equal(count, two.Count);
 		Assert.Equal(failedCount, two.FailedCount);
 		Assert.Equal(packetLossPercentage, two.PacketLossPercentage);
@@ -46,7 +46,7 @@ public class DatabaseTests : IClassFixture<Fixtures.RepositoryFixture>
 
 		// Assert
 		Assert.NotNull(two);
-		Assert.Equal(-count, two.Count);
+		Assert.Equal(-count, two!.Count);
 
 		// Act: Delete
 		await _repository.DeleteResult(dateTime);
