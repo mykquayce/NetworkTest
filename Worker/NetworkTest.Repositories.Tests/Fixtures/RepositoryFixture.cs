@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace NetworkTest.Repositories.Tests.Fixtures;
 
@@ -8,7 +9,16 @@ public sealed class RepositoryFixture : IDisposable
 
 	public RepositoryFixture()
 	{
-		var config = new Helpers.MySql.Config("localhost", 3_306, "networktest", "networktest", "networktest", Secure: true);
+		Helpers.MySql.Config config;
+		{
+			config = Helpers.MySql.Config.Defaults;
+
+			var configuration = new ConfigurationBuilder()
+				.AddUserSecrets(this.GetType().Assembly)
+				.Build();
+
+			configuration.GetSection("Database").Bind(config);
+		}
 
 		_connection = config.DbConnection;
 
