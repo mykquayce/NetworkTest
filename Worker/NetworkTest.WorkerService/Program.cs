@@ -4,6 +4,11 @@ using NetworkTest.WorkerService;
 var hostBuilder = Host.CreateDefaultBuilder(args);
 
 hostBuilder
+	.ConfigureAppConfiguration(builder =>
+	{
+		builder
+			.ResolveFileReferences();
+	})
 	.ConfigureServices((hostContext, services) =>
 	{
 		services.AddHostedService<Worker>();
@@ -17,7 +22,7 @@ hostBuilder
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
 			.Configure<NetworkTest.Services.Concrete.PacketLossTestService.Config>(hostContext.Configuration.GetSection("Test"))
-			.FileConfigure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
+			.Configure<Helpers.MySql.Config>(hostContext.Configuration.GetSection("Database"))
 			.Configure<NetworkTest.WorkerService.Worker.Config>(hostContext.Configuration.GetSection("Test").GetSection("Interval"));
 
 		services
