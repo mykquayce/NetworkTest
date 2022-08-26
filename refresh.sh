@@ -1,8 +1,8 @@
 #! /bin/sh
 
 docker pull mariadb:latest
-docker pull mcr.microsoft.com/dotnet/runtime:6.0
-docker pull mcr.microsoft.com/dotnet/sdk:6.0
+docker pull mcr.microsoft.com/dotnet/runtime:7.0
+docker pull mcr.microsoft.com/dotnet/sdk:7.0
 docker pull eassbhhtgu/networktest:latest
 docker pull eassbhhtgu/networktest-db:latest
 

@@ -3,8 +3,8 @@
 # base images
 for s in \
 	mariadb:latest \
-	mcr.microsoft.com/dotnet/runtime:6.0 \
-	mcr.microsoft.com/dotnet/sdk:6.0
+	mcr.microsoft.com/dotnet/runtime:7.0 \
+	mcr.microsoft.com/dotnet/sdk:7.0
 do
 	docker pull $s
 done
