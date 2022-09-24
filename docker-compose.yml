@@ -42,7 +42,7 @@ services:
       MARIADB_PASSWORD_FILE: /run/secrets/Database_Password
     image: eassbhhtgu/networktest-db:latest
     ports:
-    - 3306:3306/tcp
+    - 42367:3306/tcp
     secrets:
     - source: Database_Password
     - source: ca.crt
