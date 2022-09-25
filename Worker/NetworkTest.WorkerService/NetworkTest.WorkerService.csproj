@@ -8,12 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.Common" Version="1.2.1-preview5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Helpers.Common" Version="1.2.3-rc1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-rc.1.22426.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\NetworkTest.Models\NetworkTest.Models.csproj" />
-    <ProjectReference Include="..\NetworkTest.Workflows\NetworkTest.Workflows.csproj" />
+    <ProjectReference Include="..\NetworkTest.Repositories\NetworkTest.Repositories.csproj" />
+    <ProjectReference Include="..\NetworkTest.Services\NetworkTest.Services.csproj" />
   </ItemGroup>
 </Project>
