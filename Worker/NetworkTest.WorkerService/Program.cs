@@ -14,10 +14,6 @@ hostBuilder
 		services.AddHostedService<Worker>();
 
 		services.AddLogging();
-		services.AddWorkflow(options =>
-		{
-			options.EnablePolling = false;
-		});
 
 		services
 			.Configure<Helpers.Networking.Clients.Concrete.PingClient.Config>(hostContext.Configuration.GetSection("Ping"))
@@ -34,10 +30,6 @@ hostBuilder
 				return new MySql.Data.MySqlClient.MySqlConnection(options.Value.ConnectionString);
 			})
 			.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
-
-		services
-			.AddTransient<NetworkTest.Workflows.Steps.PingStep>()
-			.AddTransient<NetworkTest.Workflows.Steps.SaveStep>();
 	});
 
 var host = hostBuilder

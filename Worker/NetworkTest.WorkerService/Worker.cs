@@ -1,7 +1,5 @@
 using Dawn;
 using Microsoft.Extensions.Options;
-using WorkflowCore.Interface;
-using WorkflowCore.Models;
 
 namespace NetworkTest.WorkerService;
 
@@ -17,31 +15,21 @@ public class Worker : BackgroundService
 	}
 
 	private readonly ILogger<Worker> _logger;
-	private readonly IWorkflowHost _workflowHost;
-	private readonly IPersistenceProvider _persistenceProvider;
 	private readonly Models.Interval _interval;
+	private readonly Services.IPacketLossTestService _packetLossTestService;
+	private readonly Repositories.IRepository _repository;
 
-	public Worker(ILogger<Worker> logger, IWorkflowHost workflowHost, IPersistenceProvider persistenceProvider, IOptions<Config> options)
+	public Worker(
+		ILogger<Worker> logger,
+		IOptions<Config> options,
+		Services.IPacketLossTestService packetLossTestService,
+		Repositories.IRepository repository)
 	{
 		_logger = logger;
-		_workflowHost = workflowHost;
-		_persistenceProvider = persistenceProvider;
-
 		_interval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
 			.NotNull().Value;
-
-		_workflowHost.OnStepError += WorkflowHost_OnStepError;
-		_workflowHost.RegisterWorkflow<Workflows.MyWorkflow, Workflows.PersistenceData>();
-		_workflowHost.Start();
-	}
-
-	private void WorkflowHost_OnStepError(WorkflowInstance workflow, WorkflowStep step, Exception exception)
-	{
-#if DEBUG
-		System.Diagnostics.Debugger.Break();
-#endif
-
-		_logger.LogCritical(exception, "error processing step");
+		_packetLossTestService = Guard.Argument(packetLossTestService).NotNull().Value;
+		_repository = Guard.Argument(repository).NotNull().Value;
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -50,25 +38,17 @@ public class Worker : BackgroundService
 		{
 			_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-			{
-				var data = new Workflows.PersistenceData();
-				var id = await _workflowHost.StartWorkflow(nameof(Workflows.MyWorkflow), data);
-				WorkflowStatus status;
-				do
-				{
-					try { await Task.Delay(millisecondsDelay: 100, stoppingToken); }
-					catch (OperationCanceledException) { break; }
-					var instance = await _persistenceProvider.GetWorkflowInstance(id, stoppingToken);
-					status = instance.Status;
-				}
-				while (status == WorkflowStatus.Runnable);
-			}
+			_logger.LogInformation("Pinging");
+			var results = await _packetLossTestService.PacketLossTestAsync();
+			var (_, count, _, loss, _, jitter) = results;
+			_logger.LogInformation("Results: {count:D} ping(s), {loss:F2}% packet loss, {jitter:F2}ms jitter", count, loss, jitter);
+			_logger.LogInformation("Saving.");
+			await _repository.SaveResult(results);
+			_logger.LogInformation("Saved.");
 
 			var delay = _interval.Next - DateTime.UtcNow;
 			var millisecondInterval = (int)delay.TotalMilliseconds;
 			await Task.Delay(millisecondInterval, stoppingToken);
 		}
-
-		_workflowHost.Stop();
 	}
 }
