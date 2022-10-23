@@ -1,27 +1,19 @@
 using Dawn;
+using Helpers.Timing;
 using Microsoft.Extensions.Options;
 
 namespace NetworkTest.WorkerService;
 
 public class Worker : BackgroundService
 {
-	public record Config : Models.Interval, IOptions<Config>
-	{
-		public const Units DefaultUnit = Units.Day;
-		public const double DefaultCount = 1;
-		public Config() : base(DefaultUnit, DefaultCount) { }
-
-		public Config Value => new();
-	}
-
 	private readonly ILogger<Worker> _logger;
-	private readonly Models.Interval _interval;
+	private readonly IInterval _interval;
 	private readonly Services.IPacketLossTestService _packetLossTestService;
 	private readonly Repositories.IRepository _repository;
 
 	public Worker(
 		ILogger<Worker> logger,
-		IOptions<Config> options,
+		IOptions<Interval> options,
 		Services.IPacketLossTestService packetLossTestService,
 		Repositories.IRepository repository)
 	{
@@ -46,7 +38,9 @@ public class Worker : BackgroundService
 			await _repository.SaveResult(results);
 			_logger.LogInformation("Saved.");
 
-			var delay = _interval.Next - DateTime.UtcNow;
+			var next = _interval.Next();
+			_logger.LogInformation("Sleeping util {next:O}", next);
+			var delay = next - DateTime.UtcNow;
 			var millisecondInterval = (int)delay.TotalMilliseconds;
 			await Task.Delay(millisecondInterval, stoppingToken);
 		}

@@ -2,15 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.MySql" Version="1.4.5-rc1" />
-    <PackageReference Include="Helpers.Networking.Models" Version="1.1.22-rc1" />
+    <PackageReference Include="Helpers.MySql" Version="1.4.5-rc2" />
+    <PackageReference Include="Helpers.Networking.Models" Version="1.1.24-rc2" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
