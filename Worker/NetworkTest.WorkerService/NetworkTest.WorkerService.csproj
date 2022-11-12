@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Helpers.Common" Version="1.2.4-rc2" />
-    <PackageReference Include="Helpers.Timing" Version="1.0.1-rc2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-rc.2.22472.3" />
+    <PackageReference Include="Helpers.Common" Version="1.2.4" />
+    <PackageReference Include="Helpers.Timing" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
