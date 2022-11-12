@@ -8,20 +8,17 @@ public class Worker : BackgroundService
 {
 	private readonly ILogger<Worker> _logger;
 	private readonly IInterval _interval;
-	private readonly Services.IPacketLossTestService _packetLossTestService;
-	private readonly Repositories.IRepository _repository;
+	private readonly IServiceProvider _serviceProvider;
 
 	public Worker(
 		ILogger<Worker> logger,
 		IOptions<Interval> options,
-		Services.IPacketLossTestService packetLossTestService,
-		Repositories.IRepository repository)
+		IServiceProvider serviceProvider)
 	{
 		_logger = logger;
 		_interval = Guard.Argument(options).NotNull().Wrap(o => o.Value)
 			.NotNull().Value;
-		_packetLossTestService = Guard.Argument(packetLossTestService).NotNull().Value;
-		_repository = Guard.Argument(repository).NotNull().Value;
+		_serviceProvider = Guard.Argument(serviceProvider).NotNull().Value;
 	}
 
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,12 +27,15 @@ public class Worker : BackgroundService
 		{
 			_logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-			_logger.LogInformation("Pinging");
-			var results = await _packetLossTestService.PacketLossTestAsync();
-			var (_, count, _, loss, _, jitter) = results;
-			_logger.LogInformation("Results: {count:D} ping(s), {loss:F2}% packet loss, {jitter:F2}ms jitter", count, loss, jitter);
+			_logger.LogInformation("Pinging.");
+			var results = await TestAsync();
+			{
+				var (_, count, _, loss, _, jitter) = results;
+				_logger.LogInformation("Results: {count:D} ping(s), {loss:F2}% packet loss, {jitter:F2}ms jitter", count, loss, jitter);
+			}
+
 			_logger.LogInformation("Saving.");
-			await _repository.SaveResult(results);
+			await SaveAsync(results);
 			_logger.LogInformation("Saved.");
 
 			var next = _interval.Next();
@@ -44,5 +44,18 @@ public class Worker : BackgroundService
 			var millisecondInterval = (int)delay.TotalMilliseconds;
 			await Task.Delay(millisecondInterval, stoppingToken);
 		}
+	}
+
+	private Task<Helpers.Networking.Models.PacketLossResults> TestAsync()
+	{
+		var service = _serviceProvider.GetRequiredService<Services.IPacketLossTestService>();
+		return service.PacketLossTestAsync();
+	}
+
+	private async Task SaveAsync(Helpers.Networking.Models.PacketLossResults results)
+	{
+		var repository = _serviceProvider.GetRequiredService<Repositories.IRepository>();
+		_logger.LogInformation("Saving.");
+		await repository.SaveResult(results);
 	}
 }
