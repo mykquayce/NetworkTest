@@ -27,7 +27,7 @@ hostBuilder
 			.AddTransient<System.Data.IDbConnection>(provider =>
 			{
 				var options = provider.GetRequiredService<IOptions<Helpers.MySql.Config>>();
-				return new MySql.Data.MySqlClient.MySqlConnection(options.Value.ConnectionString);
+				return new MySqlConnector.MySqlConnection(options.Value.ConnectionString);
 			})
 			.AddTransient<NetworkTest.Repositories.IRepository, NetworkTest.Repositories.Concrete.Repository>();
 	});
