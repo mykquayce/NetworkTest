@@ -38,7 +38,11 @@ public class Worker : BackgroundService
 			await SaveAsync(results);
 			_logger.LogInformation("Saved.");
 
-			var next = _interval.Next();
+			DateTime next;
+			{
+				var min = DateTime.UtcNow.AddMinutes(2);
+				next = _interval.GetUpcoming().First(dt => dt > min);
+			}
 			_logger.LogInformation("Sleeping util {next:O}", next);
 			var delay = next - DateTime.UtcNow;
 			var millisecondInterval = (int)delay.TotalMilliseconds;
