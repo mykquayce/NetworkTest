@@ -34,9 +34,7 @@ public class Worker : BackgroundService
 				_logger.LogInformation("Results: {count:D} ping(s), {loss:F2}% packet loss, {jitter:F2}ms jitter", count, loss, jitter);
 			}
 
-			_logger.LogInformation("Saving.");
 			await SaveAsync(results);
-			_logger.LogInformation("Saved.");
 
 			DateTime next;
 			{
@@ -61,5 +59,6 @@ public class Worker : BackgroundService
 		var repository = _serviceProvider.GetRequiredService<Repositories.IRepository>();
 		_logger.LogInformation("Saving.");
 		await repository.SaveResult(results);
+		_logger.LogInformation("Saved.");
 	}
 }
