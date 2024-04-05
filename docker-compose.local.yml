@@ -3,9 +3,10 @@ version: '3.7'
 services:
   mariadb:
     image: eassbhhtgu/networktest-db:latest
-    command: /bin/sh -c "openssl x509 -in /usr/certs/ca.crt -out /usr/certs/ca.pem -outform PEM \
-        && openssl x509 -in /usr/certs/server.crt -out /usr/certs/server.pem -outform PEM \
-        && openssl rsa -in /usr/certs/server.key -text > /usr/certs/server_key.pem \
+    command: /bin/sh -c "mkdir /usr/certs/ \
+        && openssl x509 -in /run/secrets/ca.crt -out /usr/certs/ca.pem -outform PEM \
+        && openssl x509 -in /run/secrets/localhost.crt -out /usr/certs/server.pem -outform PEM \
+        && openssl rsa -in /run/secrets/localhost.key -text > /usr/certs/server_key.pem \
         && docker-entrypoint.sh mariadbd \
             --require_secure_transport=ON \
             --ssl-ca=/usr/certs/ca.pem \
@@ -20,21 +21,18 @@ services:
     - 3306:3306/tcp
     secrets:
     - source: ca.crt
-      target: /usr/certs/ca.crt
-    - source: server.crt
-      target: /usr/certs/server.crt
-    - source: server.key
-      target: /usr/certs/server.key
+    - source: localhost.crt
+    - source: localhost.key
     volumes:
     - mariadb-volume:/var/lib/mysql:rw
 
 secrets:
   ca.crt:
     file: ${USERPROFILE}\.aspnet\https\ca.crt
-  server.crt:
-    file: ${USERPROFILE}\.aspnet\https\mariadb.crt
-  server.key:
-    file: ${USERPROFILE}\.aspnet\https\mariadb.key
+  localhost.crt:
+    file: ${USERPROFILE}\.aspnet\https\localhost.crt
+  localhost.key:
+    file: ${USERPROFILE}\.aspnet\https\localhost.key
     
 volumes:
   mariadb-volume: {}

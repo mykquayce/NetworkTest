@@ -1,15 +1,15 @@
 #! /bin/sh
 
 docker pull mariadb:latest
-docker pull mcr.microsoft.com/dotnet/runtime:7.0
-docker pull mcr.microsoft.com/dotnet/sdk:7.0
+docker pull mcr.microsoft.com/dotnet/runtime:8.0
+docker pull mcr.microsoft.com/dotnet/sdk:8.0
 docker pull eassbhhtgu/networktest:latest
 docker pull eassbhhtgu/networktest-db:latest
 
 
 
-base1=$(docker image inspect --format '{{.Created}}' mcr.microsoft.com/dotnet/runtime:6.0)
-base2=$(docker image inspect --format '{{.Created}}' mcr.microsoft.com/dotnet/sdk:6.0)
+base1=$(docker image inspect --format '{{.Created}}' mcr.microsoft.com/dotnet/runtime:8.0)
+base2=$(docker image inspect --format '{{.Created}}' mcr.microsoft.com/dotnet/sdk:8.0)
 base3=$(docker image inspect --format '{{.Created}}' mariadb:latest)
 image1=$(docker image inspect --format '{{.Created}}' eassbhhtgu/networktest:latest)
 image2=$(docker image inspect --format '{{.Created}}' eassbhhtgu/networktest-db:latest)
